@@ -10,6 +10,7 @@ group "linux" {
     "debian_jdk17",
     "debian_slim_jdk11",
     "debian_slim_jdk17",
+    "debian_jdk19",
     "rhel_ubi8_jdk11",
     "rhel_ubi9_jdk17",
   ]
@@ -20,6 +21,7 @@ group "linux-arm64" {
     "almalinux_jdk11",
     "debian_jdk11",
     "debian_jdk17",
+    "debian_jdk19",
     "rhel_ubi8_jdk11",
     "rhel_ubi9_jdk17",
   ]
@@ -39,6 +41,18 @@ variable "JENKINS_VERSION" {
 
 variable "JENKINS_SHA" {
   default = "1163c4554dc93439c5eef02b06a8d74f98ca920bbc012c2b8a089d414cfa8075"
+}
+
+variable "JENKINS_HOME" {
+  default = "/var/jenkins_home"
+}
+
+variable "JENKINS_UID" {
+  default = "1000"
+}
+
+variable "JENKINS_GID" {
+  default = "1000"
 }
 
 variable "REGISTRY" {
@@ -278,6 +292,28 @@ target "rhel_ubi9_jdk17" {
     tag_weekly(false, "rhel-ubi9-jdk17"),
     tag_lts(false, "lts-rhel-ubi9-jdk17"),
     tag_lts(true, "lts-rhel-ubi9-jdk17")
+  ]
+  platforms = ["linux/amd64", "linux/arm64"]
+}
+
+target "debian_jdk19" {
+  dockerfile = "19/debian/bullseye/hotspot/Dockerfile"
+  context = "."
+  args = {
+    JENKINS_VERSION = JENKINS_VERSION
+    JENKINS_SHA = JENKINS_SHA
+    JENKINS_HOME = JENKINS_HOME
+    JENKINS_UID = JENKINS_UID
+    JENKINS_GID = JENKINS_GID
+    COMMIT_SHA = COMMIT_SHA
+    PLUGIN_CLI_VERSION = PLUGIN_CLI_VERSION
+  }
+  tags = [
+    tag(true, "jdk19"),
+    tag_weekly(false, "latest-jdk19"),
+    tag_weekly(false, "jdk19"),
+    tag_lts(false, "lts-jdk19"),
+    tag_lts(true, "lts-jdk19")
   ]
   platforms = ["linux/amd64", "linux/arm64"]
 }

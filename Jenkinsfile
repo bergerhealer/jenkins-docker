@@ -78,6 +78,7 @@ stage('Build') {
                 'debian_jdk17',
                 'debian_slim_jdk11',
                 'debian_slim_jdk17',
+                'debian_jdk19',
                 'rhel_ubi8_jdk11',
                 'rhel_ubi9_jdk17',
         ]

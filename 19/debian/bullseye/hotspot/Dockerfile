@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.6_10-jdk-focal as jre-build
+FROM eclipse-temurin:19.0.2_7-jdk-focal as jre-build
 
 RUN jlink \
   --add-modules ALL-MODULE-PATH \
@@ -38,8 +38,8 @@ ARG COMMIT_SHA
 
 ARG user=jenkins
 ARG group=jenkins
-ARG uid=1000
-ARG gid=1000
+ARG JENKINS_UID=1000
+ARG JENKINS_GID=1000
 ARG http_port=8080
 ARG agent_port=50000
 ARG JENKINS_HOME=/var/jenkins_home
@@ -53,9 +53,9 @@ ENV REF $REF
 # If you bind mount a volume from the host or a data container,
 # ensure you use the same uid
 RUN mkdir -p $JENKINS_HOME \
-  && chown ${uid}:${gid} $JENKINS_HOME \
-  && groupadd -g ${gid} ${group} \
-  && useradd -d "$JENKINS_HOME" -u ${uid} -g ${gid} -l -m -s /bin/bash ${user}
+  && chown ${JENKINS_UID}:${JENKINS_GID} $JENKINS_HOME \
+  && groupadd -g ${JENKINS_GID} ${group} \
+  && useradd -d "$JENKINS_HOME" -u ${JENKINS_UID} -g ${JENKINS_GID} -l -m -s /bin/bash ${user}
 
 # Jenkins home directory is a volume, so configuration and build history
 # can be persisted and survive image upgrades
@@ -110,7 +110,7 @@ COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 COPY jenkins-plugin-cli.sh /bin/jenkins-plugin-cli
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh", "--enable-future-java"]
 
 # metadata labels
 LABEL \
